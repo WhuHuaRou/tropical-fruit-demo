@@ -1,0 +1,1584 @@
+:root {
+    /* Priva Blue ID Industrial & Horticultural Design Tokens */
+    --priva-navy: #051D34;
+    --priva-navy-deep: #031324;
+    --priva-blue: #3377FF;
+    --priva-blue-hover: #1E60E6;
+    --priva-blue-soft: #EBF2FF;
+    --priva-green: #00BF72;
+    --priva-green-ink: #007A49;
+    --priva-green-soft: #E6F9F1;
+    --priva-aqua: #00B5CE;
+    --priva-canvas: #F3F7F9;
+    --priva-paper: #FFFFFF;
+    --priva-slate: #506273;
+    --priva-mute: #8D99A6;
+    --priva-line: #E2E8EE;
+    --priva-line-strong: #CBD5E0;
+    --priva-amber: #D97706;
+    --priva-amber-soft: #FEF3C7;
+    --priva-red: #D92D20;
+    --priva-red-soft: #FEE4E2;
+
+    /* 与 priva.com 同步：西文 Roobert（本机装有时优先使用，否则用相近的 Manrope），
+       等宽 IBM Plex Mono，中文 PingFang / Noto Sans SC */
+    --display: 'Roobert', 'Manrope', 'PingFang SC', 'HarmonyOS Sans SC', 'Noto Sans SC', 'Microsoft YaHei UI', sans-serif;
+    --sans: 'Roobert', 'Manrope', 'PingFang SC', 'HarmonyOS Sans SC', 'Noto Sans SC', 'Microsoft YaHei UI', sans-serif;
+    --mono: 'IBM Plex Mono', 'Cascadia Mono', Consolas, ui-monospace, monospace;
+
+    /* Priva Motion Curves */
+    --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-priva: cubic-bezier(0.33, 0, 0.25, 1);
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    background: var(--priva-canvas);
+    color: var(--priva-navy);
+    font: 400 14px/1.7 var(--sans);
+    letter-spacing: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+:focus-visible {
+    outline: 2px solid var(--priva-blue);
+    outline-offset: 3px;
+}
+
+/* ==========================================================================
+   PRIVA SIGNATURE KEYFRAMES
+   ========================================================================== */
+@keyframes privaSlideUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 18px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes privaHeroText {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 14px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes privaChevronIn {
+    from {
+        opacity: 0;
+        transform: translate3d(-10px, 0, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes privaSpectrumFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes privaAurora {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    50% {
+        transform: translate3d(-18px, 8px, 0) scale(1.06);
+    }
+
+    100% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+}
+
+/* Priva Signature Wireframe Number Intro + Continuous Dash Loop */
+@keyframes privaNumIntro {
+    from {
+        stroke-dashoffset: 360;
+        opacity: 0.12;
+    }
+
+    to {
+        stroke-dashoffset: 0;
+        opacity: 1;
+    }
+}
+
+@keyframes privaNumLoop {
+    from {
+        stroke-dashoffset: 0;
+    }
+
+    to {
+        stroke-dashoffset: -360;
+    }
+}
+
+@keyframes privaLineDraw {
+    from {
+        stroke-dashoffset: 600;
+    }
+
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes privaAreaFade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes privaPulseDot {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 3px rgba(0, 191, 114, 0.22);
+    }
+
+    50% {
+        box-shadow: 0 0 0 6px rgba(0, 191, 114, 0.08);
+    }
+}
+
+@keyframes privaToastIn {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 14px, 0) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+}
+
+/* Priva 风格：标题遮罩上浮、强调色流动、线条展开 */
+@keyframes privaMaskUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 0.9em, 0);
+        clip-path: inset(0 0 100% 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+        clip-path: inset(0 0 -20% 0);
+    }
+}
+
+@keyframes privaColorFlow {
+
+    0%,
+    100% {
+        color: var(--priva-aqua);
+    }
+
+    50% {
+        color: var(--priva-green);
+    }
+}
+
+@keyframes privaLineIn {
+    from {
+        transform: scaleX(0);
+    }
+
+    to {
+        transform: scaleX(1);
+    }
+}
+
+@keyframes privaStretch {
+    0% {
+        transform: scaleX(1);
+    }
+
+    60% {
+        transform: scaleX(1.25);
+    }
+
+    100% {
+        transform: scaleX(1);
+    }
+}
+
+@keyframes privaRowIn {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 10px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+/* ==========================================================================
+   APP SHELL & STICKY TOP NAVIGATION
+   ========================================================================== */
+.shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--priva-line);
+    transition: box-shadow 0.25s var(--ease-standard);
+}
+
+.topbar.scrolled {
+    box-shadow: 0 8px 24px -12px rgba(5, 29, 52, 0.12);
+}
+
+.topbar-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 36px;
+    min-height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: none;
+    border: 0;
+    padding: 6px 0;
+    text-align: left;
+    color: var(--priva-navy);
+    flex-shrink: 0;
+    transition: opacity 0.2s var(--ease-standard);
+}
+
+.brand:hover {
+    opacity: 0.86;
+}
+
+.brand-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    background: var(--priva-navy);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: transform 0.35s var(--ease-out-expo);
+}
+
+.brand:hover .brand-mark {
+    transform: translateY(-1px) scale(1.03);
+}
+
+.brand-mark::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 85% 20%, rgba(0, 191, 114, 0.6), transparent 62%),
+        radial-gradient(circle at 15% 85%, rgba(51, 119, 255, 0.7), transparent 65%);
+}
+
+.brand-mark svg {
+    position: relative;
+    z-index: 1;
+}
+
+.brand-text b {
+    display: block;
+    font-family: var(--display);
+    font-size: 15.5px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.25;
+}
+
+/* Primary Horizontal Module Links + Gliding Indicator */
+.topnav {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-wrap: wrap;
+}
+
+.nav-item {
+    position: relative;
+    background: none;
+    border: 0;
+    padding: 23px 13px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--priva-slate);
+    transition: color 0.22s var(--ease-standard);
+    white-space: nowrap;
+}
+
+.nav-item:hover {
+    color: var(--priva-navy);
+}
+
+.nav-item.on {
+    color: var(--priva-navy);
+    font-weight: 600;
+}
+
+.nav-ink {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    border-radius: 2px 2px 0 0;
+    background: linear-gradient(90deg, var(--priva-blue), var(--priva-green));
+    pointer-events: none;
+    transition: transform 0.38s var(--ease-out-expo), width 0.38s var(--ease-out-expo), opacity 0.2s ease;
+    will-change: transform, width;
+}
+
+/* Right Action: Data Screen Pill CTA with Priva Shine */
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.screen-cta {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 9999px;
+    background: var(--priva-navy);
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.28s var(--ease-out-expo), transform 0.28s var(--ease-out-expo), box-shadow 0.28s var(--ease-out-expo);
+}
+
+.screen-cta::before {
+    content: '';
+    position: absolute;
+    width: 110px;
+    height: 110px;
+    left: calc(var(--mx, 50%) - 55px);
+    top: calc(var(--my, 50%) - 55px);
+    background: radial-gradient(circle, rgba(51, 119, 255, 0.55) 0%, rgba(0, 191, 114, 0) 72%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+}
+
+.screen-cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px -4px rgba(5, 29, 52, 0.28);
+}
+
+.screen-cta:hover::before {
+    opacity: 1;
+}
+
+.screen-cta>* {
+    position: relative;
+    z-index: 1;
+}
+
+.screen-cta i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--priva-green);
+    animation: privaPulseDot 2.6s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   PRIVA HERO BAND + WIREFRAME NUMBER + SPECTRUM BAR
+   ========================================================================== */
+.hero-band {
+    background: var(--priva-navy);
+    color: #FFFFFF;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 横幅背景照片（仿 Priva：通栏实景照片 + 左侧深色遮罩，文字压在照片上） */
+/* 照片比横幅高 20%，给滚动视差留出位移空间（Priva 的 js-parallax-bg） */
+.hero-media {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -10%;
+    height: 120%;
+    background: var(--hero-image, url('../assets/img/hero.jpg')) center 45% / cover no-repeat;
+    transform-origin: 65% 50%;
+    translate: 0 var(--px, 0px);
+    pointer-events: none;
+}
+
+.route-enter .hero-media {
+    animation: privaHeroZoom 2.4s var(--ease-out-expo) both;
+}
+
+/* 遮罩：与 Priva 相同的思路，左侧主色实底，到约 2/3 处渐变为透明，露出右侧照片 */
+.hero-band::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+        linear-gradient(90deg, rgba(5, 29, 52, 0.97) 0%, rgba(5, 29, 52, 0.9) 30%, rgba(5, 29, 52, 0.55) 55%, rgba(5, 29, 52, 0.15) 75%, rgba(5, 29, 52, 0.25) 100%),
+        linear-gradient(0deg, rgba(5, 29, 52, 0.5) 0%, rgba(5, 29, 52, 0) 40%);
+    pointer-events: none;
+}
+
+/* 网点纹理：仿 Priva header-overlay，右下角密、向左上淡出 */
+.hero-band::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.22) 1.2px, transparent 1.6px);
+    background-size: 20px 20px;
+    -webkit-mask-image: linear-gradient(120deg, transparent 35%, rgba(0, 0, 0, 0.5) 70%, #000 100%);
+    mask-image: linear-gradient(120deg, transparent 35%, rgba(0, 0, 0, 0.5) 70%, #000 100%);
+    pointer-events: none;
+}
+
+@keyframes privaHeroZoom {
+    from {
+        opacity: 0;
+        transform: scale(1.08);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.hero-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 56px 36px 52px;
+    min-height: 300px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 32px;
+    align-items: center;
+}
+
+.hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.82);
+    margin-bottom: 14px;
+}
+
+.hero-title-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.hero-chevron {
+    display: inline-flex;
+    flex-shrink: 0;
+}
+
+.hero-band h1 {
+    margin: 0;
+    font-family: var(--display);
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    color: #FFFFFF;
+}
+
+/* 标题扫光：Priva 的 color-wave-to-white，一道青绿色光带从右扫到左，扫过后变成白字 */
+@keyframes privaWaveToWhite {
+    from {
+        background-position: 100% 0;
+    }
+
+    to {
+        background-position: 0 0;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .route-enter .hero-band h1 {
+        background-image: linear-gradient(110deg, #FFFFFF 0%, #FFFFFF 50%, var(--priva-aqua) 50%, var(--priva-aqua) 55%, var(--priva-green) 55%, var(--priva-green) 60%, transparent 60%, transparent 100%);
+        background-size: 300% 100%;
+        background-repeat: no-repeat;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+}
+
+.hero-desc {
+    margin: 10px 0 0 32px;
+    max-width: 66ch;
+    color: rgba(255, 255, 255, 0.80);
+    font-size: 14px;
+    line-height: 1.68;
+}
+
+.hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.aside-note {
+    max-width: 284px;
+    border-left: 2px solid var(--priva-green);
+    padding: 4px 0 4px 14px;
+    font-size: 12.5px;
+    line-height: 1.62;
+    color: rgba(255, 255, 255, 0.88);
+    text-shadow: 0 1px 10px rgba(5, 29, 52, 0.7);
+}
+
+/* Priva Signature Animated SVG Wireframe Section Number (00 - 07) */
+.priva-num {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.priva-num-svg {
+    height: 92px;
+    width: auto;
+    overflow: visible;
+}
+
+.priva-num-text {
+    font-family: var(--display);
+    font-size: 96px;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.5);
+    stroke-width: 1.65px;
+    stroke-dasharray: 334 26;
+    animation: privaNumLoop 12s linear infinite;
+}
+
+.route-enter .priva-num-text {
+    animation: privaNumIntro 1.35s var(--ease-priva) 1, privaNumLoop 12s linear 1.35s infinite;
+}
+
+.route-enter .hero-eyebrow {
+    animation: privaHeroText 0.7s var(--ease-out-expo) both;
+}
+
+.route-enter .hero-chevron {
+    animation: privaChevronIn 0.8s var(--ease-out-expo) 0.1s both;
+}
+
+.route-enter .hero-band h1 {
+    animation: privaMaskUp 0.95s var(--ease-out-expo) 0.08s both, privaWaveToWhite 2.4s ease 0.15s both;
+}
+
+.route-enter .hero-desc {
+    animation: privaHeroText 1s var(--ease-out-expo) 0.22s both;
+}
+
+.route-enter .aside-note {
+    animation: privaHeroText 1s var(--ease-out-expo) 0.32s both;
+}
+
+.aside-note {
+    position: relative;
+    border-left-color: transparent;
+}
+
+.aside-note::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--priva-green);
+    transform-origin: top;
+}
+
+.route-enter .aside-note::before {
+    animation: privaLineInY 0.9s var(--ease-out-expo) 0.45s both;
+}
+
+@keyframes privaLineInY {
+    from {
+        transform: scaleY(0);
+    }
+
+    to {
+        transform: scaleY(1);
+    }
+}
+
+/* Priva Signature Full-Width Spectrum Gradient Bar */
+.spectrum-bar {
+    height: 12px;
+    width: 100%;
+    background: linear-gradient(90deg, var(--priva-navy) 0%, var(--priva-blue) 45%, var(--priva-aqua) 72%, var(--priva-green) 100%);
+    background-size: 180% 100%;
+    transform-origin: left;
+    animation: privaSpectrumFlow 12s ease-in-out infinite;
+}
+
+#hero-slot.route-enter .spectrum-bar {
+    animation: privaLineIn 1.1s var(--ease-out-expo) 0.1s both, privaSpectrumFlow 12s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   BREADCRUMB & GLIDING SUB-TABS
+   ========================================================================== */
+.subbar {
+    background: var(--priva-paper);
+    border-bottom: 1px solid var(--priva-line);
+}
+
+.subbar-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    min-height: 50px;
+}
+
+.crumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--priva-mute);
+    padding: 10px 0;
+}
+
+.crumb button {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--priva-mute);
+    font-weight: 500;
+    transition: color 0.18s ease;
+}
+
+.crumb button:hover {
+    color: var(--priva-blue);
+}
+
+.crumb b {
+    color: var(--priva-navy);
+    font-weight: 600;
+}
+
+.crumb i {
+    font-style: normal;
+    opacity: 0.55;
+}
+
+.tabs {
+    position: relative;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.tab {
+    position: relative;
+    background: none;
+    border: 0;
+    padding: 14px 2px 13px;
+    border-bottom: 2px solid transparent;
+    color: var(--priva-slate);
+    font-size: 13.5px;
+    font-weight: 500;
+    transition: color 0.2s var(--ease-standard);
+}
+
+.tab:hover {
+    color: var(--priva-navy);
+}
+
+.tab.on {
+    color: var(--priva-blue);
+    font-weight: 600;
+}
+
+.tab-ink {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: var(--priva-blue);
+    pointer-events: none;
+    transition: transform 0.34s var(--ease-out-expo), width 0.34s var(--ease-out-expo), opacity 0.2s ease;
+    will-change: transform, width;
+}
+
+/* ==========================================================================
+   MAIN WORKSPACE & STAGGERED CHOREOGRAPHY
+   ========================================================================== */
+.main {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 32px 36px 80px;
+    flex: 1;
+}
+
+.system-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.system-card {
+    min-width: 0;
+    padding: 20px 22px;
+    border: 1px solid var(--priva-line);
+    border-top: 3px solid var(--priva-blue);
+    border-radius: 4px;
+    background: var(--priva-paper);
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.system-card:nth-child(3n + 2) {
+    border-top-color: var(--priva-green);
+}
+
+.system-card:nth-child(3n) {
+    border-top-color: var(--priva-aqua);
+}
+
+.system-card:hover {
+    border-color: var(--priva-line-strong);
+    box-shadow: 0 8px 24px rgba(5, 29, 52, 0.08);
+    transform: translateY(-2px);
+}
+
+.system-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.system-number {
+    color: var(--priva-blue);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.system-group {
+    color: var(--priva-mute);
+    font-size: 12px;
+}
+
+.system-card h2 {
+    margin: 18px 0 8px;
+    color: var(--priva-navy);
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.system-card p {
+    min-height: 48px;
+    margin: 0 0 16px;
+    color: var(--priva-slate);
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+/* Staggered reveal ONLY when navigating between routes (zero flicker on in-page actions) */
+.route-enter .lead>div {
+    animation: privaSlideUp 0.85s var(--ease-out-expo) both;
+}
+
+.route-enter .lead>div:nth-child(1) {
+    animation-delay: 0.04s;
+}
+
+.route-enter .lead>div:nth-child(2) {
+    animation-delay: 0.12s;
+}
+
+.route-enter .lead>div:nth-child(3) {
+    animation-delay: 0.20s;
+}
+
+.route-enter .lead>div:nth-child(4) {
+    animation-delay: 0.28s;
+}
+
+.route-enter .lead>div::before {
+    animation: privaLineIn 0.9s var(--ease-out-expo) both;
+    animation-delay: inherit;
+}
+
+/* 面板滚动进入视口时上浮淡入（由 core.js 的 IntersectionObserver 控制） */
+.panel.reveal {
+    opacity: 0;
+    transform: translate3d(0, 32px, 0);
+    transition: opacity 0.9s var(--ease-out-expo) var(--d, 0s), transform 0.9s var(--ease-out-expo) var(--d, 0s), border-color 0.28s var(--ease-out-expo), box-shadow 0.28s var(--ease-out-expo);
+}
+
+.panel.reveal.in {
+    opacity: 1;
+    transform: none;
+}
+
+/* 面板出现后，表格行和地块依次浮现 */
+.panel.reveal.in .tbl tbody tr,
+.panel.reveal.in .plots>* {
+    animation: privaRowIn 0.6s var(--ease-out-expo) both;
+    animation-delay: calc(var(--d, 0s) + 0.18s + var(--i, 0) * 0.035s);
+}
+
+/* Grid System */
+.grid {
+    display: grid;
+    gap: 20px;
+}
+
+.g-2-1 {
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+}
+
+.g-1-2 {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+}
+
+.g-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.g-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* Priva Clean Architectural Cards / Panels */
+.panel {
+    background: var(--priva-paper);
+    border: 1px solid var(--priva-line);
+    border-radius: 4px;
+    padding: 22px 24px;
+    min-width: 0;
+    box-shadow: 0 1px 2px rgba(5, 29, 52, 0.025);
+    transition: border-color 0.28s var(--ease-out-expo), box-shadow 0.28s var(--ease-out-expo), transform 0.28s var(--ease-out-expo);
+}
+
+.panel:hover {
+    border-color: #C9D6E2;
+    box-shadow: 0 10px 26px -10px rgba(5, 29, 52, 0.08);
+}
+
+.panel.flush {
+    padding: 0;
+    overflow: hidden;
+}
+
+.panel h3 {
+    margin: 0 0 14px;
+    font-family: var(--display);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--priva-navy);
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.panel h3::before {
+    content: '';
+    width: 3px;
+    height: 15px;
+    border-radius: 1px;
+    background: linear-gradient(180deg, var(--priva-blue), var(--priva-green));
+    flex-shrink: 0;
+    transition: transform 0.25s var(--ease-out-expo);
+}
+
+.panel:hover h3::before {
+    transform: scaleY(1.18);
+}
+
+.panel.flush h3 {
+    padding: 20px 24px 0;
+}
+
+/* Priva "Facts & Figures" KPI Strip */
+.lead {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.lead>div {
+    position: relative;
+    overflow: hidden;
+    background: var(--priva-paper);
+    border: 1px solid var(--priva-line);
+    border-radius: 4px;
+    padding: 20px 20px 17px;
+    transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo), border-color 0.3s ease;
+}
+
+/* 顶部色条：进场时从左展开，悬停时短暂拉伸 */
+.lead>div::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--priva-navy);
+    transform-origin: left;
+}
+
+.lead>div:nth-child(2)::before {
+    background: var(--priva-blue);
+}
+
+.lead>div:nth-child(3)::before {
+    background: var(--priva-green);
+}
+
+.lead>div:nth-child(4)::before {
+    background: var(--priva-aqua);
+}
+
+.lead>div::after {
+    content: '';
+    position: absolute;
+    left: 20px;
+    bottom: 12px;
+    width: 18px;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--priva-line-strong);
+    transform-origin: left;
+    transition: background-color 0.3s ease;
+}
+
+.lead>div:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 32px -14px rgba(5, 29, 52, 0.14);
+}
+
+.lead>div:hover::after {
+    background: var(--priva-blue);
+    animation: privaStretch 0.6s var(--ease-standard);
+}
+
+.lead div b {
+    display: block;
+    font-family: var(--display);
+    font-variant-numeric: tabular-nums;
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--priva-navy);
+}
+
+.lead div span {
+    display: block;
+    margin-top: 5px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--priva-slate);
+}
+
+/* Data Tables */
+.tbl-wrap {
+    overflow-x: auto;
+}
+
+table.tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+}
+
+.tbl th {
+    padding: 11px 18px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: var(--priva-slate);
+    background: #F8FAFC;
+    border-top: 1px solid var(--priva-line);
+    border-bottom: 1px solid var(--priva-line);
+    white-space: nowrap;
+}
+
+.tbl td {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--priva-line);
+    vertical-align: middle;
+    color: var(--priva-navy);
+    transition: background-color 0.18s ease;
+}
+
+.tbl tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.tbl tbody tr[data-pick] {
+    cursor: pointer;
+}
+
+.tbl tbody tr:hover td {
+    background: #F4F8FC;
+}
+
+.tbl tr.on td {
+    background: var(--priva-blue-soft);
+}
+
+.tbl tr.on td:first-child {
+    box-shadow: inset 3px 0 0 var(--priva-blue);
+}
+
+.tbl .r {
+    text-align: right;
+}
+
+/* Utility Typography */
+.mono {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+}
+
+.mute {
+    color: var(--priva-slate);
+}
+
+/* Status Badges */
+.tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 10px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.6;
+    background: #EDF2F7;
+    color: var(--priva-slate);
+    white-space: nowrap;
+}
+
+.tag.ok {
+    background: var(--priva-green-soft);
+    color: var(--priva-green-ink);
+}
+
+.tag.warn {
+    background: var(--priva-amber-soft);
+    color: var(--priva-amber);
+}
+
+.tag.alert {
+    background: var(--priva-red-soft);
+    color: var(--priva-red);
+}
+
+.tag.ref {
+    background: var(--priva-blue-soft);
+    color: var(--priva-blue);
+}
+
+/* Priva Signature Pill Buttons with Radial Cursor Shine */
+.btn {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 1px solid var(--priva-line-strong);
+    background: var(--priva-paper);
+    color: var(--priva-navy);
+    border-radius: 9999px;
+    padding: 7px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    transition:
+        color 0.22s var(--ease-standard),
+        border-color 0.22s var(--ease-standard),
+        background-color 0.22s var(--ease-standard),
+        transform 0.22s var(--ease-out-expo),
+        box-shadow 0.22s var(--ease-out-expo);
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    width: 96px;
+    height: 96px;
+    left: calc(var(--mx, 50%) - 48px);
+    top: calc(var(--my, 50%) - 48px);
+    background: radial-gradient(circle, rgba(51, 119, 255, 0.16) 0%, rgba(51, 119, 255, 0) 72%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+}
+
+.btn:hover:not(:disabled)::before {
+    opacity: 1;
+}
+
+.btn:hover:not(:disabled) {
+    border-color: var(--priva-blue);
+    color: var(--priva-blue);
+    background: #FAFCFF;
+    transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled) {
+    transform: translateY(0) scale(0.985);
+}
+
+.btn.primary {
+    background: var(--priva-navy);
+    border-color: var(--priva-navy);
+    color: #FFFFFF;
+}
+
+.btn.primary::before {
+    background: radial-gradient(circle, rgba(51, 119, 255, 0.62) 0%, rgba(0, 191, 114, 0) 74%);
+}
+
+.btn.primary:hover:not(:disabled) {
+    background: var(--priva-navy);
+    border-color: var(--priva-blue);
+    color: #FFFFFF;
+    box-shadow: 0 8px 20px -4px rgba(5, 29, 52, 0.28);
+}
+
+.btn.alert {
+    background: var(--priva-red);
+    border-color: var(--priva-red);
+    color: #FFFFFF;
+}
+
+.btn.alert::before {
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 72%);
+}
+
+.btn.alert:hover:not(:disabled) {
+    background: #C81E1E;
+    border-color: #C81E1E;
+    color: #FFFFFF;
+    box-shadow: 0 8px 18px -4px rgba(217, 45, 32, 0.32);
+}
+
+.btn.sm {
+    padding: 4px 13px;
+    font-size: 12px;
+}
+
+.btn:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+}
+
+/* Forms & Controls */
+.row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 14px;
+}
+
+.field label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--priva-slate);
+}
+
+.field input,
+.field select,
+select {
+    border: 1px solid var(--priva-line-strong);
+    border-radius: 4px;
+    background: #FFFFFF;
+    padding: 7px 11px;
+    color: var(--priva-navy);
+    transition: border-color 0.2s var(--ease-standard), box-shadow 0.2s var(--ease-standard);
+}
+
+.field input:hover,
+.field select:hover,
+select:hover {
+    border-color: #A9BACB;
+}
+
+.field input:focus,
+.field select:focus,
+select:focus {
+    outline: none;
+    border-color: var(--priva-blue);
+    box-shadow: 0 0 0 3px rgba(51, 119, 255, 0.14);
+}
+
+input[type='range'] {
+    accent-color: var(--priva-blue);
+}
+
+/* Progress & Telemetry Bars + Sparkline Motion */
+.bar {
+    height: 6px;
+    border-radius: 999px;
+    background: #E6EDF3;
+    overflow: hidden;
+}
+
+.bar i {
+    display: block;
+    height: 100%;
+    background: var(--priva-blue);
+    border-radius: 999px;
+    transition: width 0.55s var(--ease-out-expo);
+}
+
+.bar.ok i {
+    background: var(--priva-green);
+}
+
+.bar.warn i {
+    background: #F59E0B;
+}
+
+.bar.alert i {
+    background: var(--priva-red);
+}
+
+.route-enter svg[aria-label='趋势图'] path[fill='none'] {
+    stroke-dasharray: 600;
+    animation: privaLineDraw 1.05s var(--ease-out-expo) both;
+}
+
+.route-enter svg[aria-label='趋势图'] path:not([fill='none']) {
+    animation: privaAreaFade 0.85s ease 0.15s both;
+}
+
+/* Key-Value Specification List */
+.kv {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 18px;
+    margin: 0;
+    font-size: 13.5px;
+}
+
+.kv dt {
+    color: var(--priva-slate);
+    font-weight: 500;
+}
+
+.kv dd {
+    margin: 0;
+    color: var(--priva-navy);
+    font-weight: 500;
+}
+
+/* Compartment / Plot Telemetry Matrix */
+.plots {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+}
+
+.plot {
+    aspect-ratio: 1.3;
+    border: 1px solid #CBEBD9;
+    border-radius: 4px;
+    background: #F2FBF6;
+    color: var(--priva-navy);
+    font-size: 12px;
+    font-weight: 600;
+    text-align: left;
+    padding: 8px 10px;
+    position: relative;
+    transition: transform 0.24s var(--ease-out-expo), box-shadow 0.24s var(--ease-out-expo), border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.plot::before {
+    content: '';
+    display: block;
+    width: 16px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--priva-green);
+    margin-bottom: 4px;
+    transition: width 0.24s var(--ease-out-expo);
+}
+
+.plot.warn {
+    background: #FFFBEB;
+    border-color: #FDE68A;
+    color: #92400E;
+}
+
+.plot.warn::before {
+    background: #F59E0B;
+}
+
+.plot.alert {
+    background: #FEF2F2;
+    border-color: #FECACA;
+    color: var(--priva-red);
+}
+
+.plot.alert::before {
+    background: var(--priva-red);
+}
+
+.plot:hover {
+    transform: translateY(-2px);
+    border-color: var(--priva-blue);
+    box-shadow: 0 8px 18px -6px rgba(5, 29, 52, 0.12);
+}
+
+.plot:hover::before {
+    width: 24px;
+}
+
+.plot.sel {
+    border: 2px solid var(--priva-blue);
+    background: #FFFFFF;
+    box-shadow: 0 10px 22px -6px rgba(51, 119, 255, 0.24);
+}
+
+/* Terminal / API Payload Block */
+pre.code {
+    margin: 0;
+    padding: 14px 16px;
+    background: var(--priva-navy);
+    color: #E2EEF8;
+    border-left: 3px solid var(--priva-aqua);
+    border-radius: 4px;
+    font: 12px/1.7 var(--mono);
+    overflow: auto;
+}
+
+/* Empty State & Toast */
+.empty {
+    padding: 32px;
+    text-align: center;
+    color: var(--priva-slate);
+    background: #FAFBFD;
+    border: 1px dashed var(--priva-line-strong);
+    border-radius: 4px;
+}
+
+.toast {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    background: var(--priva-navy);
+    color: #FFFFFF;
+    border-left: 4px solid var(--priva-green);
+    padding: 11px 18px;
+    border-radius: 4px;
+    box-shadow: 0 14px 32px rgba(5, 29, 52, 0.24);
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 60;
+    animation: privaToastIn 0.32s var(--ease-out-expo) both;
+}
+
+/* Footer Engineering Bar */
+.footbar {
+    border-top: 1px solid var(--priva-line);
+    background: var(--priva-paper);
+    color: var(--priva-mute);
+    font-size: 12px;
+}
+
+.footbar-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 16px 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+@media (max-width: 1180px) {
+    .topbar-inner {
+        padding: 10px 20px;
+        flex-wrap: wrap;
+    }
+
+    .nav-item {
+        padding: 10px 10px;
+    }
+
+    .nav-ink {
+        display: none;
+    }
+
+    .hero-inner,
+    .subbar-inner,
+    .main,
+    .footbar-inner {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .g-2-1,
+    .g-1-2,
+    .g-3,
+    .hero-inner {
+        grid-template-columns: 1fr;
+    }
+
+    .system-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .priva-num {
+        display: none;
+    }
+
+    .plots {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 760px) {
+    .main {
+        padding: 20px 16px 56px;
+    }
+
+    .g-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .system-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .plots {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .hero-band h1 {
+        font-size: 22px;
+    }
+
+    .hero-desc {
+        margin-left: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width,initial-scale=1'>
+    <title>热带水果科研信息化平台 · 数据大屏</title>
+    <link rel='preconnect' href='https://fonts.googleapis.com'>
+    <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
+    <link
+        href='https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap'
+        rel='stylesheet'>
+    <style>
+        :root {
+            /* 参考 ruoyi-lovelace-ui 深色科研大屏：深海军蓝实底 + 青绿主色 */
+            --bg: #06111a;
+            --panel: #101b24;
+            --card: #0e192280;
+            --card-hover: #162531;
+            --sub: #0b1620;
+            --ln: #2b495b;
+            --ln-card: #274858;
+            --ln-hi: #67bbe5;
+            --tx: #ffffff;
+            --tx-2: rgba(255,255,255,0.62);
+            --mt: rgba(255,255,255,0.42);
+            --cy: #78d5ff;
+            --tl: #2dd4bf;
+            --gn: #22c55e;
+            --am: #ffca76;
+            --rs: #fb7185;
+            --vi: #c8b6ff;
+
+            /* 字体：参考网站以 Noto Sans SC 为主 */
+            --sans: 'Noto Sans SC', 'Roobert', 'Manrope', 'PingFang SC', 'HarmonyOS Sans SC', 'Microsoft YaHei UI', sans-serif;
+            --mono: 'IBM Plex Mono', 'Cascadia Mono', Consolas, ui-monospace, monospace;
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            width: 100%; height: 100%; overflow: hidden;
+            background: var(--bg); color: var(--tx);
+            font-family: var(--sans);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        button { font: inherit; color: inherit; cursor: pointer; background: none; border: 0; }
+        a { color: inherit; text-decoration: none; }
+        :focus-visible { outline: 2px solid var(--cy); outline-offset: 2px; }
+
+        @keyframes pulseDot {
+            0%, 100% { box-shadow: 0 0 0 3px rgba(129, 228, 184, 0.22); }
+            50%       { box-shadow: 0 0 0 6px rgba(129, 228, 184, 0.06); }
+        }
+
+        /* 舞台：参考网站四层叠加——实色底、顶部青色光晕、右下青色光晕、96px 细网格 */
+        #stage {
+            position: absolute; left: 0; top: 0;
+            width: 1720px; height: 960px;
+            transform-origin: 0 0;
+            padding: 14px 18px;
+            display: flex; flex-direction: column; gap: 12px;
+            background:
+                radial-gradient(circle at top,         rgba(58,120,160,0.34)   0%, rgba(13,32,45,0.18)  48%, transparent 78%),
+                radial-gradient(circle at bottom right, rgba(79,167,214,0.14)   0%, transparent 42%),
+                linear-gradient(90deg,  rgba(150,193,214,0.08) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(150,193,214,0.08) 1px, transparent 1px),
+                var(--bg);
+            background-size: auto, auto, 96px 96px, 96px 96px, auto;
+        }
+
+        /* Header：透明底 + 底部分隔线，无圆角 */
+        header {
+            height: 68px; flex: none;
+            display: grid; grid-template-columns: 420px 1fr 420px;
+            align-items: center; padding: 0 20px;
+            background: transparent;
+            border-bottom: 1px solid var(--ln);
+            position: relative;
+        }
+
+        /* 运行状态：绿色胶囊 + 发光圆点，与参考一致 */
+        .rs {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 16px; border-radius: 9999px;
+            background: #152e25; border: 1px solid #2d5b4a;
+            color: #81e4b8; font-size: 13.5px; font-weight: 600;
+            box-shadow: 0 0 18px rgba(33, 92, 72, 0.24);
+        }
+
+        .rs i {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #81e4b8;
+            animation: pulseDot 2.4s ease-in-out infinite;
+            box-shadow: 0 0 12px rgba(129, 228, 184, 0.9);
+        }
+
+        .ttl { text-align: center; }
+
+        .ttl h1 {
+            font-size: 36px; font-weight: 700;
+            letter-spacing: 0.08em; line-height: 1.15; color: #FFFFFF;
+        }
+
+        .ttl p {
+            font-size: 13px; color: rgba(255,255,255,0.55);
+            letter-spacing: 0.14em; margin-top: 4px; font-weight: 400;
+        }
+
+        /* 时钟：参考样式 rounded-[22px] bg-[#101d26] border-[#35576c] */
+        .clk {
+            justify-self: end; display: flex; align-items: baseline; gap: 12px;
+            padding: 7px 18px; border: 1px solid #35576c;
+            border-radius: 14px; background: #101d26;
+        }
+
+        .clk small { font-size: 12.5px; color: rgba(255,255,255,0.50); font-weight: 400; }
+
+        .clk b {
+            font-family: var(--mono); font-size: 22px; font-weight: 500;
+            letter-spacing: 0.06em; color: #FFFFFF;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Main 3-Column Grid */
+        .main {
+            flex: 1; min-height: 0;
+            display: grid; grid-template-columns: 432px minmax(0, 1fr) 444px;
+            gap: 14px;
+        }
+
+        .col { display: flex; flex-direction: column; gap: 12px; min-height: 0; min-width: 0; }
+
+        /* 面板：大圆角 20px，顶部径向渐变底，内顶阴影 */
+        .pn {
+            background: linear-gradient(180deg, #131e2b 0%, #0f1a23 100%);
+            border: 1px solid var(--ln);
+            border-radius: 20px;
+            padding: 14px 16px;
+            display: flex; flex-direction: column; gap: 10px;
+            min-height: 0; min-width: 0; overflow: hidden;
+            box-shadow: inset 0 4px 24px rgba(0,0,0,0.16);
+        }
+
+        .pn h2 {
+            flex: none; font-size: 16px; font-weight: 600;
+            display: flex; align-items: center; gap: 9px;
+            color: var(--tx); letter-spacing: 0.04em;
+        }
+
+        /* 标题前的竖条：参考用宽 6px 高 22px 圆角全满，有青色辉光 */
+        .pn h2::before {
+            content: '';
+            width: 6px; height: 22px; border-radius: 9999px;
+            background: var(--cy);
+            box-shadow: 0 0 12px rgba(103, 187, 229, 0.65);
+        }
+
+        .pn h2 em {
+            margin-left: auto; font-style: normal; font-size: 12px; font-weight: 500;
+            padding: 3px 12px; border-radius: 9999px;
+            background: #152430; border: 1px solid #33576d;
+            color: #9cd7f0; white-space: nowrap;
+        }
+
+        /* Segmented Tabs */
+        .tabs { flex: none; display: flex; gap: 6px; }
+
+        .tabs button {
+            flex: 1; padding: 6px 8px; border-radius: 9999px;
+            border: 1px solid var(--ln-card); background: transparent;
+            font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,0.50);
+            white-space: nowrap; transition: all 0.2s var(--ease);
+        }
+
+        .tabs button:hover { border-color: var(--ln-hi); color: rgba(255,255,255,0.8); }
+
+        .tabs button.on {
+            color: #FFFFFF; border-color: #33576d; background: #152430;
+        }
+
+        /* API Ranking Rows */
+        .rk { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }
+
+        .rk-item {
+            background: rgba(16, 27, 36, 0.75);
+            border: 1px solid var(--ln-card);
+            border-radius: 12px; padding: 7px 12px;
+        }
+
+        .rk .r {
+            display: grid; grid-template-columns: 24px minmax(0,1fr) auto;
+            gap: 8px; align-items: center; font-size: 13.5px; font-weight: 500;
+        }
+
+        .rk .r span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .n, .v { font-variant-numeric: tabular-nums; }
+        .n { font-family: var(--mono); font-size: 12px; color: rgba(255,255,255,0.38); }
+        .v { font-weight: 700; color: #FFFFFF; white-space: nowrap; }
+
+        .bar { height: 5px; border-radius: 9999px; background: rgba(255,255,255,0.08); margin-top: 5px; overflow: hidden; }
+        .bar i { display: block; height: 100%; border-radius: 9999px; transition: width 0.45s var(--ease); }
+
+        /* Panel Footer Strip */
+        .ft {
+            flex: none; padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 12.5px; color: rgba(255,255,255,0.40); white-space: nowrap;
+        }
+
+        .ft b { color: #FFFFFF; font-weight: 600; font-variant-numeric: tabular-nums; font-size: 14px; }
+
+        /* 4-Column Inner Stat Tiles */
+        .st { flex: none; display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; }
+
+        .sx {
+            border: 1px solid var(--ln-card); border-radius: 12px;
+            background: rgba(14, 25, 34, 0.80); padding: 9px 6px; text-align: center; min-width: 0;
+        }
+
+        .sx b { display: block; font-size: 20px; font-weight: 700; line-height: 1.2; color: #FFFFFF; font-variant-numeric: tabular-nums; }
+        .sx span { display: block; margin-top: 2px; font-size: 11.5px; color: rgba(255,255,255,0.48); white-space: nowrap; }
+
+        .g2 { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        /* 内部卡片：参考 bg-[radial-gradient(circle_at_top,#1d425b_0%,#12202a_76%)] */
+        .sub-card {
+            background: radial-gradient(circle at top, #1d425b 0%, #12202a 76%);
+            border: 1px solid #27485b; border-radius: 14px;
+            padding: 10px 14px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            min-height: 0; min-width: 0;
+        }
+
+        .sub { flex: none; font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,0.60); margin-bottom: 4px; }
+        .sub-list { flex: 1; display: flex; flex-direction: column; justify-content: space-around; min-height: 0; }
+        .li { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; color: rgba(255,255,255,0.58); }
+        .li b { font-weight: 600; color: #FFFFFF; font-variant-numeric: tabular-nums; }
+
+        /* Center Top 4 KPI Tiles：参考 rounded-[24px] bg-[radial-gradient(circle_at_top,#1a3040,#12202a)] */
+        .kp { flex: none; display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+
+        .kc {
+            border: 1px solid var(--ln); border-radius: 20px;
+            background: radial-gradient(circle at top, #1a3040 0%, #12202a 100%);
+            padding: 13px 16px 15px; min-width: 0; overflow: hidden;
+            display: flex; flex-direction: column; gap: 4px;
+            box-shadow: inset 0 4px 20px rgba(0,0,0,0.16);
+        }
+
+        .kc:nth-child(1) { border-color: rgba(120, 213, 255, 0.26); }
+        .kc:nth-child(2) { border-color: rgba(255, 202, 118, 0.26); }
+        .kc:nth-child(3) { border-color: rgba(251, 113, 133, 0.26); }
+        .kc:nth-child(4) { border-color: rgba(34,  197,  94, 0.26); }
+
+        .kc b { display: flex; align-items: baseline; gap: 4px; white-space: nowrap; font-size: 24px; font-weight: 700; line-height: 1.15; color: #FFFFFF; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+        .kc b small { font-size: 12.5px; font-weight: 400; color: rgba(255,255,255,0.50); }
+        .kc span { font-size: 12.5px; font-weight: 400; color: rgba(255,255,255,0.52); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* 5-Step Flow Cards */
+        .fl { flex: none; display: flex; align-items: stretch; gap: 6px; }
+
+        .fs {
+            flex: 1; min-width: 0; border: 1px solid #27485b; border-radius: 14px;
+            background: radial-gradient(circle at top, #1d425b 0%, #12202a 76%);
+            padding: 10px 6px; text-align: center; transition: all 0.2s var(--ease);
+        }
+
+        .fs:hover { border-color: #3d6d89; background: #162531; }
+        .fs span { display: block; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.60); }
+        .fs b { display: block; font-size: 24px; font-weight: 700; color: #FFFFFF; line-height: 1.25; font-variant-numeric: tabular-nums; }
+        .fs small { display: block; font-size: 11.5px; color: rgba(255,255,255,0.38); }
+
+        .ar { align-self: center; color: rgba(255,255,255,0.25); font-size: 17px; font-weight: 500; }
+
+        /* Pest Warning Rows */
+        .th { flex: none; display: grid; grid-template-columns: 128px 66px 1fr 92px 190px; gap: 10px; align-items: center; font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.40); padding: 0 12px 2px; }
+
+        #al { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }
+
+        .tr {
+            display: grid; grid-template-columns: 128px 66px 1fr 92px 190px;
+            gap: 10px; align-items: center; padding: 8px 12px;
+            border-radius: 12px; background: rgba(14, 25, 34, 0.75);
+            border: 1px solid var(--ln-card);
+            font-size: 13.5px; font-weight: 400; color: rgba(255,255,255,0.70);
+            transition: all 0.2s var(--ease);
+        }
+
+        .tr:hover { background: rgba(22, 38, 50, 0.92); border-color: var(--ln-hi); }
+
+        .pb { position: relative; height: 7px; border-radius: 9999px; background: rgba(255,255,255,0.08); }
+        .pb i { display: block; height: 100%; border-radius: 9999px; }
+        .pb u { position: absolute; top: -3px; bottom: -3px; width: 2px; background: rgba(255,202,118,0.75); }
+
+        .pill { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; width: fit-content; white-space: nowrap; }
+        .pill.alert { background: rgba(251,113,133,0.14); border: 1px solid rgba(251,113,133,0.32); color: #fb7185; }
+        .pill.warn  { background: rgba(255,202,118,0.14); border: 1px solid rgba(255,202,118,0.32); color: #ffca76; }
+        .pill.mute  { background: rgba(150,193,214,0.10); border: 1px solid rgba(150,193,214,0.18); color: rgba(255,255,255,0.48); }
+
+        /* Right Column: 6 Sensor Tiles */
+        .rt { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); grid-template-rows: 1fr 1fr; gap: 8px; }
+
+        .tc { border: 1px solid var(--ln-card); border-radius: 14px; background: radial-gradient(circle at top, #192636 0%, #0f1921 100%); padding: 9px 11px 7px; display: flex; flex-direction: column; justify-content: space-between; min-height: 0; min-width: 0; }
+        .tc.t-rose   { border-color: rgba(251,113,133,0.30); }
+        .tc.t-amber  { border-color: rgba(255,202,118,0.26); }
+        .tc.t-violet { border-color: rgba(200,182,255,0.26); }
+        .tc.t-cyan   { border-color: rgba(120,213,255,0.30); }
+        .tc.t-green  { border-color: rgba(34, 197,  94,0.26); }
+
+        .tc span { font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.52); white-space: nowrap; }
+        .tc b { font-size: 21px; font-weight: 700; color: #FFFFFF; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; line-height: 1.1; }
+        .tc b small { font-size: 11.5px; font-weight: 400; margin-left: 2px; color: rgba(255,255,255,0.40); }
+
+        /* Bottom 8 Navigation Links */
+        footer { flex: none; height: 44px; display: grid; grid-template-columns: repeat(8, minmax(0,1fr)); gap: 10px; }
+        footer { grid-template-columns: 1fr; align-items: center; color: var(--tx-2); font-size: 13px; }
+
+        footer a { display: flex; align-items: center; justify-content: space-between; padding: 0 14px; color: rgba(255,255,255,0.80); border: 1px solid var(--ln); border-radius: 14px; background: linear-gradient(90deg, #13212c 0%, #0f1a23 100%); font-size: 14px; font-weight: 500; white-space: nowrap; transition: all 0.2s var(--ease); }
+        footer a i { font-style: normal; color: rgba(255,255,255,0.28); transition: transform 0.2s var(--ease), color 0.2s ease; }
+        footer a:hover { border-color: var(--cy); background: #162531; color: #FFFFFF; }
+        footer a:hover i { color: var(--cy); transform: translateX(3px); }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+        }
+        .auth-screen { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 24px; background: rgba(3, 12, 19, .88); backdrop-filter: blur(10px); }
+        .auth-screen[hidden] { display: none; }
+        .auth-panel { position: relative; }
+        .auth-panel { position: relative; width: min(420px, 100%); padding: 38px; border: 1px solid #35576c; border-radius: 14px; background: linear-gradient(160deg, #142b3a, #0b1720 72%); box-shadow: 0 28px 90px #0009; }
+        .auth-kicker { color: #78d5ff; font: 11px var(--mono); letter-spacing: .08em; }
+        .auth-panel h1 { margin-top: 22px; font-size: 27px; }
+        .auth-panel p { margin: 8px 0 26px; color: var(--tx-2); font-size: 14px; }
+        .auth-panel label { display: grid; gap: 8px; margin: 16px 0; color: var(--tx-2); font-size: 13px; }
+        .auth-panel input { width: 100%; padding: 12px 13px; border: 1px solid #35576c; border-radius: 6px; background: #08141d; color: white; font: inherit; }
+        .auth-panel input:focus { outline: 2px solid #78d5ff; outline-offset: 1px; }
+        .auth-panel button { width: 100%; margin-top: 8px; padding: 12px; border-radius: 6px; background: #087f78; color: white; font-weight: 600; }
+        .auth-panel button:hover { background: #0a9b8e; }
+        .auth-panel .auth-close { position: absolute; width: auto; right: 22px; top: 18px; padding: 4px 8px; background: transparent; color: var(--tx-2); font-size: 12px; }
+        .auth-panel small { display: block; margin-top: 18px; color: var(--mt); text-align: center; }
+        .auth-error { min-height: 20px; margin-top: 10px; color: #fb7185; font-size: 13px; }
+        .screen-login-trigger { padding: 7px 10px; border: 1px solid #35576c; border-radius: 6px; background: #152e3d; color: var(--tx); font-size: 12px; }
+    </style>
+</head>
+
+<body>
+    <div id='stage'>
+        <header>
+            <div><span class='rs'><i></i>运行状态 正常</span></div>
+            <div class='ttl'>
+                <h1>热带水果科研信息化平台</h1>
+                <p>种质共享 · 数据治理 · 育种研发 · AI 决策 · 病虫害预警 · 基地物联</p>
+            </div>
+            <div class='clk'><small id='dt0'></small><b id='clk'></b><button id='screen-login-trigger' class='screen-login-trigger'></button></div>
+        </header>
+
+        <div class='main'>
+            <!-- 左列：原装 2 个模块 -->
+            <div class='col'>
+                <section class='pn' style='flex:1.08'>
+                    <h2>API 使用监控与分析<em>点击切换榜单</em></h2>
+                    <div class='tabs' id='tb'></div>
+                    <div class='rk' id='rk'></div>
+                    <div class='ft'>
+                        <span>种质资源 <b>38,412</b> 份</span>
+                        <span>订购机构 <b>109</b> 家</span>
+                        <span>今日超限停服 <b style='color:#fb7185'>1</b> 家</span>
+                    </div>
+                </section>
+
+                <section class='pn' style='flex:1'>
+                    <h2>数据汇聚、治理与资源<em>数据总量 1.02 PB</em></h2>
+                    <div class='st' id='gs'></div>
+                    <div class='g2'>
+                        <div class='sub-card'>
+                            <div class='sub'>模型分层数量（张）</div>
+                            <div class='sub-list' id='ly'></div>
+                        </div>
+                        <div class='sub-card'>
+                            <div class='sub'>数据异常统计（条）</div>
+                            <div class='sub-list' id='an'></div>
+                        </div>
+                    </div>
+                    <div class='sub-card' id='gt' style='flex:none;padding:8px 12px'></div>
+                </section>
+            </div>
+
+            <!-- 中列：原装 4 项 KPI + 闭环面板 + 病虫害预警面板 -->
+            <div class='col'>
+                <div class='kp' id='kp'></div>
+
+                <section class='pn' style='flex:1.12'>
+                    <h2>异常识别 → 诊断 → 处置 → 闭环<em>点击进入对应页面</em></h2>
+                    <div class='fl' id='fl'></div>
+                    <div class='g2'>
+                        <div class='sub-card'>
+                            <div class='sub'>异常类型分布（今日 37 处）</div>
+                            <div class='sub-list' id='ct'></div>
+                        </div>
+                        <div class='sub-card'>
+                            <div class='sub'>处置效果跟踪 · 3 号地块病害指数</div>
+                            <div id='tk'
+                                style='flex:1;display:flex;flex-direction:column;justify-content:space-between;min-height:0'>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class='pn' style='flex:1'>
+                    <h2>病虫害预警与防治时机<em>预警阈值 70%</em></h2>
+                    <div class='th'>
+                        <span>作物 / 地块</span>
+                        <span>病虫害</span>
+                        <span>风险概率</span>
+                        <span>物候期</span>
+                        <span>防治时机与防控建议</span>
+                    </div>
+                    <div id='al'></div>
+                </section>
+            </div>
+
+            <!-- 右列：原装物联设备状态 + 病虫害与环境实时数据 + 育种研发与数据挖掘 -->
+            <div class='col'>
+                <section class='pn' style='flex:1.38'>
+                    <h2>物联设备状态<em>在线 / 离线 · 设备占比</em></h2>
+                    <div class='sub-card' id='rg'
+                        style='flex:none;flex-direction:row;align-items:center;gap:18px;padding:10px 14px'></div>
+                    <div class='sub' style='margin:2px 0 -4px'>设备类型占比（在线 / 总数）</div>
+                    <div id='dv'
+                        style='flex:1;display:flex;flex-direction:column;justify-content:space-around;min-height:0'>
+                    </div>
+                </section>
+
+                <section class='pn' style='flex:1'>
+                    <h2>病虫害与环境实时数据<em>近 8 小时走势</em></h2>
+                    <div class='rt' id='rt'></div>
+                </section>
+
+                <section class='pn' style='flex:0.62'>
+                    <h2>育种研发与数据挖掘</h2>
+                    <div class='st' id='br'></div>
+                    <div class='ft'><span>性状采集 4 种方式 · 数据来源 6 类 · 分钟级决策</span></div>
+                </section>
+            </div>
+        </div>
+
+        <footer id='nv'></footer>
+    </div>
+
+    <script>
+        const $ = s => document.querySelector(s), still = matchMedia('(prefers-reduced-motion: reduce)').matches, stage = $('#stage');
+
+        /* Adaptive Aspect-Ratio Full-Bleed Scaling:
+           Matches exact browser window aspect ratio -> Zero black bars, zero clipping, crisp on 14" laptops! */
+        const fit = () => {
+            const W = 1720;
+            const sc = innerWidth / W;
+            const H = Math.max(880, Math.round(innerHeight / sc));
+            if (H * sc > innerHeight) {
+                const sc2 = innerHeight / 880;
+                const W2 = Math.round(innerWidth / sc2);
+                stage.style.width = W2 + 'px';
+                stage.style.height = '880px';
+                stage.style.transform = `scale(${sc2})`;
+            } else {
+                stage.style.width = W + 'px';
+                stage.style.height = H + 'px';
+                stage.style.transform = `scale(${sc})`;
+            }
+        };
+        addEventListener('resize', fit);
+        fit();
+
+        const pad = n => String(n).padStart(2, '0');
+        const tick = () => {
+            const t = new Date();
+            $('#dt0').textContent = '当前时间：' + t.getFullYear() + '年' + (t.getMonth() + 1) + '月' + t.getDate() + '日';
+            $('#clk').textContent = pad(t.getHours()) + ':' + pad(t.getMinutes()) + ':' + pad(t.getSeconds());
+        };
+        tick();
+        setInterval(tick, 1000);
+
+        const bar = (p, c) => `<div class='bar'><i style='width:${p}%;background:${c}'></i></div>`;
+
+        let _gid = 0;
+        const spark = (d, w, h, c) => {
+            const id = 'spg' + (++_gid);
+            const mn = Math.min(...d), mx = Math.max(...d), r = mx - mn || 1;
+            const p = d.map((v, i) => [i / (d.length - 1) * w, h - 4 - (v - mn) / r * (h - 9)]);
+            let l = `M ${p[0][0].toFixed(1)} ${p[0][1].toFixed(1)}`;
+            for (let i = 0; i < p.length - 1; i++) {
+                const cx = ((p[i][0] + p[i + 1][0]) / 2).toFixed(1);
+                l += ` C ${cx} ${p[i][1].toFixed(1)}, ${cx} ${p[i + 1][1].toFixed(1)}, ${p[i + 1][0].toFixed(1)} ${p[i + 1][1].toFixed(1)}`;
+            }
+            return `<svg viewBox='0 0 ${w} ${h}' width='100%' height='${h}' preserveAspectRatio='none' aria-hidden='true'>
+    <path d='${l} L ${w} ${h} L 0 ${h} Z' fill='${c}' fill-opacity='.16'/>
+    <path d='${l}' fill='none' stroke='${c}' stroke-width='1.6' stroke-linejoin='round' vector-effect='non-scaling-stroke'/>
+  </svg>`;
+        };
+
+        const fmt = n => n.toLocaleString('en-US') + ' 次';
+        const RK = [
+            ['用户调用量', [['海南省热带作物研究所', 412580], ['中国热科院品种资源所', 338210], ['广西亚热带作物研究所', 204760], ['云南热区农业科学院', 151320], ['广东湛江芒果试验站', 98640]], fmt, '#78d5ff'],
+            ['接口调用量', [['果园小气候逐小时序列', 512680], ['种质基础信息查询', 318420], ['物候期观测记录', 142300], ['品种权属与系谱', 96540], ['病虫害标注样本', 89400]], fmt, '#2dd4bf'],
+            ['接口失败率', [['病虫害标注样本', 3.68], ['物候期观测记录', 2.41], ['果园小气候逐小时序列', .46], ['种质基础信息查询', .12], ['品种权属与系谱', .08]], n => n.toFixed(2) + '%', '#fb7185']
+        ];
+        let rk = 0, rt;
+        const drawRk = () => {
+            $('#tb').innerHTML = RK.map((r, i) => `<button class='${i === rk ? 'on' : ''}' data-i='${i}'>${r[0]} TOP5</button>`).join('');
+            const r = RK[rk], mx = r[1][0][1];
+            $('#rk').innerHTML = r[1].map((x, i) => `<div class='rk-item'><div class='r'><span class='n'>0${i + 1}</span><span>${x[0]}</span><span class='v'>${r[2](x[1])}</span></div>${bar(x[1] / mx * 100, r[3])}</div>`).join('');
+        };
+        const runRk = () => { clearInterval(rt); if (!still) rt = setInterval(() => { rk = (rk + 1) % 3; drawRk(); }, 6000); };
+        $('#tb').addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (b) { rk = +b.dataset.i; drawRk(); runRk(); } });
+        drawRk();
+        runRk();
+
+        $('#gs').innerHTML = [['4 / 6', '数据源在线'], ['290', '数据表'], ['5', '数据类目'], ['78.6%', '存储空间已用']].map(x => `<div class='sx'><b>${x[0]}</b><span>${x[1]}</span></div>`).join('');
+        $('#ly').innerHTML = [['贴源层 ODS', 126], ['明细层 DWD', 88], ['汇总层 DWS', 52], ['应用层 ADS', 24]].map(x => `<div><div class='li'><span>${x[0]}</span><b>${x[1]}</b></div>${bar(x[1] / 126 * 100, '#78d5ff')}</div>`).join('');
+        $('#an').innerHTML = [['主键重复', 6], ['字段空值超阈值', 5], ['编码不规范', 4], ['时间序列断点', 2]].map(x => `<div><div class='li'><span>${x[0]}</span><b>${x[1]}</b></div>${bar(x[1] / 6 * 100, '#f59e0b')}</div>`).join('');
+        $('#gt').innerHTML = `<div class='li' style='margin:0 0 4px'><span class='sub' style='margin:0'>数据资产趋势 · 近 12 个月（TB）</span><b style='color:#78d5ff'>520 → 1,012 TB</b></div>` + spark([520, 568, 604, 651, 703, 742, 798, 836, 884, 932, 978, 1012], 500, 44, '#78d5ff');
+
+        $('#kp').innerHTML = [
+            ['1,428,650', '次', '今日 API 调用'],
+            ['37', '处', '今日检出异常'],
+            ['2 / 4', '条', '触发预警（阈值 70%）'],
+            ['351 / 360', '台', '在线物联设备']
+        ].map(x => `<div class='kc'><b>${x[0]}<small>${x[1]}</small></b><span>${x[2]}</span></div>`).join('');
+
+        const FL = [
+            ['异常检测', '37', '处', 'ai/detect'],
+            ['诊断分析', '31', '处', 'ai/diagnose'],
+            ['处置推荐', '24', '单', 'ai/advice'],
+            ['效果跟踪', '12', '单', 'ai/track'],
+            ['模型优化', 'v2.4.1', '', 'ai/track']
+        ];
+        $('#fl').innerHTML = FL.map((s, i) => (i ? `<span class='ar'>→</span>` : '') + `<div class='fs'><span>${s[0]}</span><b>${s[1]}</b><small>${s[2] || '当前版本'}</small></div>`).join('');
+
+        $('#ct').innerHTML = [
+            ['病虫害侵染', 21, '#fb7185'],
+            ['生长受阻', 9, '#f59e0b'],
+            ['土壤盐渍化', 7, '#78d5ff']
+        ].map(x => `<div><div class='li'><span>${x[0]}</span><b>${x[1]} 处</b></div>${bar(x[1] / 21 * 100, x[2])}</div>`).join('');
+
+        const TK = [41, 39, 37, 34, 31, 29, 26, 24], tp = TK.map((v, i) => [12 + i / 7 * 376, 86 - (v - 20) / 25 * 74]);
+        let tl = `M ${tp[0][0].toFixed(1)} ${tp[0][1].toFixed(1)}`;
+        for (let i = 0; i < tp.length - 1; i++) {
+            const cx = ((tp[i][0] + tp[i + 1][0]) / 2).toFixed(1);
+            tl += ` C ${cx} ${tp[i][1].toFixed(1)}, ${cx} ${tp[i + 1][1].toFixed(1)}, ${tp[i + 1][0].toFixed(1)} ${tp[i + 1][1].toFixed(1)}`;
+        }
+        $('#tk').innerHTML = `<svg viewBox='0 0 400 96' width='100%' height='100%' style='max-height:96px' role='img' aria-label='病害指数由 41 降到 24'>
+  <line x1='12' x2='388' y1='56' y2='56' stroke='#f59e0b' stroke-dasharray='5 4'/>
+  <text x='388' y='50' fill='#ffca76' font-size='11' font-weight='500' text-anchor='end'>阈值 30</text>
+  <path d='${tl} L 388 94 L 12 94 Z' fill='#22c55e' fill-opacity='.16'/>
+  <path d='${tl}' fill='none' stroke='#22c55e' stroke-width='2'/>
+  <circle cx='${tp[7][0]}' cy='${tp[7][1].toFixed(1)}' r='4' fill='#22c55e' stroke='#12202a' stroke-width='1.5'/>
+</svg><div class='li'><span>处置前 <b>41</b></span><span>当前 <b style='color:#81e4b8'>24</b>，低于阈值</span></div>`;
+
+        const AL = [
+            ['芒果 · 3 号地块', '炭疽病', 86, '果实膨大期', '3 天内 · 喷药并清除病果'],
+            ['荔枝 · 7 号地块', '蒂蛀虫', 74, '果实着色期', '7 天内 · 悬挂诱虫板监测'],
+            ['香蕉 · 12 号地块', '叶斑病', 68, '营养生长期', '未触发'],
+            ['火龙果 · 9 号地块', '溃疡病', 52, '开花期', '未触发']
+        ];
+        $('#al').innerHTML = AL.map(a => {
+            const on = a[2] >= 70;
+            const c = on ? (a[2] > 80 ? '#fb7185' : '#f59e0b') : '#78d5ff';
+            const cls = on ? (a[2] > 80 ? 'alert' : 'warn') : 'mute';
+            return `<div class='tr'>
+    <span style='font-weight:600;color:var(--tx)'>${a[0]}</span>
+    <span>${a[1]}</span>
+    <div style='display:flex;align-items:center;gap:8px'>
+      <b class='v' style='width:40px;color:${on ? (a[2] > 80 ? '#fb7185' : '#ffca76') : 'rgba(255,255,255,0.48)'}'>${a[2]}%</b>
+      <div class='pb' style='flex:1'><i style='width:${a[2]}%;background:${c}'></i><u style='left:70%'></u></div>
+    </div>
+    <span style='color:var(--tx-2)'>${a[3]}</span>
+    <span class='pill ${cls}'>${a[4]}</span>
+  </div>`;
+        }).join('');
+
+        const ring = (p, c) => `<svg viewBox='0 0 120 120' width='90' height='90' role='img' aria-label='在线率 ${p}%'>
+  <circle cx='60' cy='60' r='48' fill='none' stroke='rgba(255,255,255,0.08)' stroke-width='12'/>
+  <circle cx='60' cy='60' r='48' fill='none' stroke='${c}' stroke-width='12' stroke-dasharray='${(p * 3.0159).toFixed(1)} 301.59' transform='rotate(-90 60 60)'/>
+  <text x='60' y='67' text-anchor='middle' fill='#FFFFFF' font-size='22' font-weight='500' style='font-family:var(--sans)'>${p}%</text>
+</svg>`;
+        $('#rg').innerHTML = ring(97.5, '#22c55e') + `<div style='flex:1;display:flex;flex-direction:column;gap:5px'><div class='li'><span>在线</span><b style='color:#81e4b8'>351 台</b></div><div class='li'><span>离线</span><b style='color:#fb7185'>9 台</b></div><div class='li'><span>设备故障告警</span><b style='color:#ffca76'>4 台</b></div></div>`;
+
+        $('#dv').innerHTML = [
+            ['虫情测报灯', 48, 46],
+            ['孢子捕捉仪', 24, 23],
+            ['土壤传感器', 120, 116],
+            ['环境传感器', 12, 12],
+            ['巡园相机', 36, 34],
+            ['灌溉控制器', 120, 120]
+        ].map(d => `<div><div class='li'><span>${d[0]} <span style='color:var(--mt);font-size:11.5px'>占 ${(d[1] / 360 * 100).toFixed(1)}%</span></span><b>${d[2]} / ${d[1]}</b></div>${bar(d[2] / d[1] * 100, d[2] === d[1] ? '#22c55e' : '#f59e0b')}</div>`).join('');
+
+        $('#rt').innerHTML = [
+            ['虫情 · 诱虫数', '128', '头', [20, 35, 60, 90, 110, 128, 120, 98], '#fb7185', 't-rose'],
+            ['病情 · 孢子数', '46', '个', [12, 18, 24, 30, 38, 46, 44, 40], '#c8b6ff', 't-violet'],
+            ['病害指数', '41', '', [38, 39, 40, 41, 41, 40, 41, 41], '#f59e0b', 't-amber'],
+            ['冠层温度', '29.1', '℃', [24, 25, 27, 29, 30, 31, 30, 29], '#f59e0b', 't-amber'],
+            ['冠层湿度', '88', '%', [95, 90, 86, 80, 78, 82, 85, 88], '#78d5ff', 't-cyan'],
+            ['土壤 EC', '2.4', 'mS/cm', [2.1, 2.2, 2.2, 2.3, 2.3, 2.4, 2.4, 2.4], '#22c55e', 't-green']
+        ].map(t => `<div class='tc ${t[5]}'><span>${t[0]}</span><b>${t[1]}<small>${t[2]}</small></b>${spark(t[3], 120, 26, t[4])}</div>`).join('');
+
+        $('#br').innerHTML = [
+            ['4,218', '育种材料'],
+            ['12', '育种方案'],
+            ['318', '本季配组'],
+            ['3.2', '建模耗时 分钟']
+        ].map(x => `<div class='sx'><b>${x[0]}</b><span>${x[1]}</span></div>`).join('');
+
+        $('#nv').textContent = '热带水果科研信息化平台 · 数据大屏';
+    </script>
+    <script src='auth.js'></script>
+    <script>PlatformAuth.mountLogin();</script>
+</body>
+
+</html>
